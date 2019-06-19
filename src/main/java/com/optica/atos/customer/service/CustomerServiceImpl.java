@@ -1,8 +1,10 @@
 package com.optica.atos.customer.service;
 
+import com.optica.atos.customer.dao.CustomerServiceDao;
 import com.optica.atos.customer.domain.Customer;
 import com.optica.atos.customer.domain.OpticaParent;
 import com.optica.atos.customer.exceptions.CustomerException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,6 +16,9 @@ import java.util.stream.Collectors;
 @Service
 public class CustomerServiceImpl implements CustomerService {
 
+    @Autowired
+    private CustomerServiceDao customerServiceDao;
+
     /**
      * Get data from repository
      * @return
@@ -22,7 +27,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public OpticaParent getCustomers() throws CustomerException {
 
-        return OpticaParent.builder().customers(dummyCustomerList()).build();
+        return OpticaParent.builder().customers(customerServiceDao.getCustomerList()).build();
     }
 
     /**
@@ -33,11 +38,13 @@ public class CustomerServiceImpl implements CustomerService {
      */
     @Override
     public OpticaParent removeCustomer(String id) throws CustomerException {
-        List<Customer> list = dummyCustomerList();
+        List<Customer> list = customerServiceDao.getCustomerList();
 
         List<Customer> modifiedList = list.stream()
                 .filter(c -> !c.getId().equalsIgnoreCase(id))
                 .collect(Collectors.toList());
+
+        customerServiceDao.setCustomerList(modifiedList);
 
         return OpticaParent.builder().customers(modifiedList).build();
     }
@@ -54,44 +61,10 @@ public class CustomerServiceImpl implements CustomerService {
 
         List<Customer> customers = new ArrayList<>();
         customers.add(customer);
-        customers.addAll(dummyCustomerList());
+        customers.addAll(customerServiceDao.getCustomerList());
+        customerServiceDao.setCustomerList(customers);
 
         return OpticaParent.builder().customers(customers).build();
-    }
-
-
-    /**
-     * Remove after repository
-     * @return
-     */
-    private List<Customer> dummyCustomerList() {
-
-        Customer customer1 = Customer.builder()
-                .id("A12345")
-                .firstName("Satish")
-                .lastName("Yeruva")
-                .build();
-
-        Customer customer2 = Customer.builder()
-                .id(UUID.randomUUID().toString())
-                .firstName("Steve")
-                .lastName("Jobs")
-                .build();
-
-        Customer customer3 = Customer.builder()
-                .id(UUID.randomUUID().toString())
-                .firstName("James")
-                .lastName("Gosling")
-                .build();
-
-        Customer customer4 = Customer.builder()
-                .id(UUID.randomUUID().toString())
-                .firstName("Martin")
-                .lastName("Fowler")
-                .build();
-
-
-        return Arrays.asList(customer1, customer2, customer3, customer4);
     }
 
 }

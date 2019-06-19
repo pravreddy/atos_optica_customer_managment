@@ -32,7 +32,7 @@ public class CustomerApplicationTests {
     public void given_operation_when_submits_then_returns_list_of_customers() throws Exception {
 
         this.mockMvc.perform(get("/api/customers")).andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("$.customers[0].Firstname").value("Satish"));
+                .andExpect(jsonPath("$.customers[0].Firstname").value("John"));
 
     }
 
@@ -63,7 +63,7 @@ public class CustomerApplicationTests {
 
         this.mockMvc.perform(delete("/api/customers/"+id))
                 .andDo(print()).andExpect(status().isOk())
-                .andExpect(jsonPath("customers[0].Surname").value("Jobs"));
+                .andExpect(jsonPath("customers[0].Surname").value("smith"));
     }
 
 
